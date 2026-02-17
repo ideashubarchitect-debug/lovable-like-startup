@@ -2,7 +2,7 @@
 
 ## AttributeError: module 'platform' has no attribute 'system'
 
-If migration or gunicorn fails with this error, the app used to be named `platform`, which shadowed Python’s built-in `platform` module. **This repo now uses the `core` app** instead, so that error should be resolved. Pull the latest code and redeploy.
+If migration or gunicorn fails with this error, the app used to be named `platform`, which shadowed Python’s built-in `platform` module. **This repo now uses the `core` app** instead, so that error should be resolved. In addition, `manage.py` and `config/wsgi.py` now force the stdlib `platform` into `sys.modules` at startup, so a leftover `platform/` dir on the server won't break. Pull the latest code and redeploy. If it still fails, remove the leftover dir via SSH: `rm -rf .../django-src/platform`.
 
 ## Deployment path (fixes many failures)
 

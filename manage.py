@@ -3,6 +3,20 @@
 import os
 import sys
 
+# KloudBean fix: ensure stdlib 'platform' is used (server may have leftover platform/ dir
+# that shadows it and breaks uuid.py -> AttributeError: module 'platform' has no attribute 'system')
+_orig_path = list(sys.path)
+_shadowing = [p for p in _orig_path if p and (
+    os.path.exists(os.path.join(os.path.abspath(p), "platform", "__init__.py"))
+    or os.path.isfile(os.path.join(os.path.abspath(p), "platform.py"))
+)]
+for p in _shadowing:
+    sys.path.remove(p)
+import platform as _stdlib_platform
+sys.modules["platform"] = _stdlib_platform
+for p in reversed(_shadowing):
+    sys.path.insert(0, p)
+
 
 def main():
     """Run administrative tasks."""
