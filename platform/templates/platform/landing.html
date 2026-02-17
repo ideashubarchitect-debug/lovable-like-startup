@@ -1,0 +1,41 @@
+{% extends 'platform/base.html' %}
+{% block title %}Launch Your Own Lovable — Make Money. Deploy on KloudBean.{% endblock %}
+{% block content %}
+<div class="landing">
+    <div class="container" style="text-align: center; padding: 4rem 1rem 6rem;">
+        <p style="color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Your Own SaaS. Your Revenue.</p>
+        <h1 style="font-size: clamp(2.25rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.2; margin-bottom: 1.5rem; max-width: 720px; margin-left: auto; margin-right: auto;">
+            Launch your own <span style="color: var(--accent);">Lovable</span> or <span style="color: var(--accent);">Replit</span>. Start making money.
+        </h1>
+        <p style="font-size: 1.25rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.5rem;">
+            This is the full product. Deploy it on KloudBean. Rebrand it. You're the CEO. Charge users. Keep the revenue.
+        </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 4rem;">
+            <a href="{% url 'platform:signup' %}" class="btn btn-primary" style="padding: 1rem 1.75rem; font-size: 1.1rem;">Get started — it's free</a>
+            <a href="{% url 'platform:pricing' %}" class="btn btn-ghost" style="padding: 1rem 1.75rem; font-size: 1.1rem;">See pricing</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; text-align: left; max-width: 900px; margin: 0 auto;">
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
+                <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">🚀</div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Deploy in minutes</h3>
+                <p style="color: var(--muted); font-size: 0.95rem;">Connect Git, hit Deploy on KloudBean. No DevOps. You're live.</p>
+            </div>
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
+                <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">💎</div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Your brand, your revenue</h3>
+                <p style="color: var(--muted); font-size: 0.95rem;">Rebrand this as your own no-code/Lovable-style platform. Charge what you want.</p>
+            </div>
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
+                <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">📈</div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Billionaire idea</h3>
+                <p style="color: var(--muted); font-size: 0.95rem;">Lovable and Replit are worth billions. Run your own version. Deploy on KloudBean and scale.</p>
+            </div>
+        </div>
+
+        <p style="margin-top: 4rem; color: var(--muted); font-size: 0.9rem;">
+            One codebase. One deploy. You own the product. <a href="{% url 'platform:pricing' %}" style="color: var(--accent);">Start with Free →</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

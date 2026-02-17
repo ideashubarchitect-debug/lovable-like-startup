@@ -1,0 +1,51 @@
+{% extends 'platform/base.html' %}
+{% block title %}Pricing — AppForge{% endblock %}
+{% block content %}
+<div class="container" style="text-align: center; padding: 3rem 1rem 5rem;">
+    <h1 style="font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 0.75rem;">Pricing</h1>
+    <p style="color: var(--muted); font-size: 1.1rem; max-width: 520px; margin: 0 auto 3rem;">When you deploy this on KloudBean and rebrand it, you set your own prices. Here's a template.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 900px; margin: 0 auto;">
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.25rem;">Free</h3>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Get started</p>
+            <p style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">$0</p>
+            <ul style="list-style: none; text-align: left; color: var(--muted); font-size: 0.95rem;">
+                <li style="margin-bottom: 0.5rem;">✓ 3 apps</li>
+                <li style="margin-bottom: 0.5rem;">✓ Basic builder</li>
+                <li>✓ Deploy on your KloudBean server</li>
+            </ul>
+            <a href="{% url 'platform:signup' %}" class="btn btn-ghost" style="width: 100%; margin-top: 1.5rem;">Get started</a>
+        </div>
+
+        <div style="background: var(--surface); border: 2px solid var(--accent); border-radius: var(--radius); padding: 2rem;">
+            <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">POPULAR</span>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.25rem;">Pro</h3>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">For serious builders</p>
+            <p style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">$29<span style="font-size: 0.9rem; font-weight: 400; color: var(--muted);">/mo</span></p>
+            <ul style="list-style: none; text-align: left; color: var(--muted); font-size: 0.95rem;">
+                <li style="margin-bottom: 0.5rem;">✓ Unlimited apps</li>
+                <li style="margin-bottom: 0.5rem;">✓ AI-powered builder (add your API key)</li>
+                <li>✓ Your brand, your domain</li>
+            </ul>
+            <a href="{% url 'platform:signup' %}" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Start Pro</a>
+        </div>
+
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.25rem;">Billionaire</h3>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">The dream</p>
+            <p style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">Custom</p>
+            <ul style="list-style: none; text-align: left; color: var(--muted); font-size: 0.95rem;">
+                <li style="margin-bottom: 0.5rem;">✓ Everything in Pro</li>
+                <li style="margin-bottom: 0.5rem;">✓ White-label + SLA</li>
+                <li>✓ You run your own Lovable. Revenue is yours.</li>
+            </ul>
+            <a href="https://www.kloudbean.com/" target="_blank" rel="noopener" class="btn btn-ghost" style="width: 100%; margin-top: 1.5rem;">Contact</a>
+        </div>
+    </div>
+
+    <p style="margin-top: 3rem; color: var(--muted); font-size: 0.9rem;">
+        Deploy this product on <a href="https://www.kloudbean.com/django-hosting/" style="color: var(--accent);">KloudBean</a>. Rebrand it. Set your own pricing. You're the founder.
+    </p>
+</div>
+{% endblock %}

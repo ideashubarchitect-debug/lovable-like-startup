@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app.name }} — Preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #0a0a0f;
+            color: #f0f0f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .preview-box {
+            max-width: 480px;
+            background: #12121a;
+            border: 1px solid #1e1e2a;
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .preview-box h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .preview-box p { color: #71717a; font-size: 0.95rem; line-height: 1.5; }
+        .badge { display: inline-block; background: rgba(167,139,250,0.2); color: #a78bfa; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.8rem; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="preview-box">
+        <h1>{{ app.name }}</h1>
+        <p>{{ app.description|default:"Your app preview. Connect AI to generate real UIs from descriptions." }}</p>
+        <span class="badge">Preview — Built with AppForge</span>
+    </div>
+</body>
+</html>

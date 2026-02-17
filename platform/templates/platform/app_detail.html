@@ -1,0 +1,24 @@
+{% extends 'platform/base.html' %}
+{% block title %}{{ app.name }} — AppForge{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 640px; padding-top: 2rem;">
+    <a href="{% url 'platform:dashboard' %}" style="color: var(--muted); font-size: 0.9rem; text-decoration: none; margin-bottom: 1rem; display: inline-block;">← Dashboard</a>
+    <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem;">{{ app.name }}</h1>
+    <p style="color: var(--muted); margin-bottom: 1.5rem;">{{ app.description|default:"No description" }}</p>
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+        <span style="font-size: 0.85rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: var(--border); color: var(--muted); text-transform: capitalize;">{{ app.status }}</span>
+    </div>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Preview</h3>
+        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">Your app is built from your description. Connect AI in production to generate real UIs.</p>
+        <a href="{% url 'platform:app_preview' app.pk %}" target="_blank" rel="noopener" class="btn btn-ghost">Open preview →</a>
+    </div>
+
+    <div style="background: linear-gradient(135deg, rgba(167,139,250,0.1) 0%, rgba(139,92,246,0.05) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Deploy on KloudBean</h3>
+        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">This whole product runs on KloudBean. Deploy once, rebrand, start charging. You're the CEO.</p>
+        <a href="https://www.kloudbean.com/django-hosting/" target="_blank" rel="noopener" class="btn btn-primary">Launch on KloudBean →</a>
+    </div>
+</div>
+{% endblock %}

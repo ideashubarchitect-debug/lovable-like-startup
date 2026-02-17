@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AppForge — Your Own Lovable{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --border: #1e1e2a;
+            --text: #f0f0f5;
+            --muted: #71717a;
+            --accent: #a78bfa;
+            --accent-hover: #c4b5fd;
+            --success: #34d399;
+            --radius: 12px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+        nav {
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+        }
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        nav a:hover { color: var(--accent); }
+        .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.25rem;
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        .btn-primary:hover { background: var(--accent-hover); color: var(--bg); }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+        }
+        .btn-ghost:hover { background: var(--surface); color: var(--accent); }
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        .input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
+        }
+        .input::placeholder { color: var(--muted); }
+        label { display: block; font-weight: 500; margin-bottom: 0.35rem; font-size: 0.9rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .messages { list-style: none; margin-bottom: 1rem; }
+        .messages li { padding: 0.75rem; border-radius: var(--radius); margin-bottom: 0.5rem; }
+        .messages .success { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+        .messages .error { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        main { padding: 2rem 0 4rem; }
+        {% block extra_css %}{% endblock %}
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="{% url 'platform:landing' %}">AppForge</a>
+            <div class="nav-links">
+                <a href="{% url 'platform:pricing' %}">Pricing</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'platform:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'platform:create_app' %}">New App</a>
+                    <a href="{% url 'platform:logout' %}" class="btn btn-ghost">Log out</a>
+                {% else %}
+                    <a href="{% url 'platform:login' %}" class="btn btn-ghost">Log in</a>
+                    <a href="{% url 'platform:signup' %}" class="btn btn-primary">Get started</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <main>
+        {% if messages %}
+            <div class="container">
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
