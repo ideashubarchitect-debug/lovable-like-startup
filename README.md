@@ -67,7 +67,7 @@ This means the server image has an older GNU C Library than the deployment tool 
 ```
 kloudbean_django/
 ├── config/           # Django project (settings, urls, wsgi)
-├── platform/         # The SaaS app
+├── core/             # The SaaS app (named "core" to avoid shadowing Python's built-in platform module)
 │   ├── models.py     # App (user, name, description, status)
 │   ├── views.py      # landing, auth, dashboard, create_app, app_detail, pricing
 │   ├── forms.py      # SignUp, CreateApp

@@ -1,4 +1,4 @@
-{% extends 'platform/base.html' %}
+{% extends 'core/base.html' %}
 {% block title %}Pricing — AppForge{% endblock %}
 {% block content %}
 <div class="container" style="text-align: center; padding: 3rem 1rem 5rem;">
@@ -15,7 +15,7 @@
                 <li style="margin-bottom: 0.5rem;">✓ Basic builder</li>
                 <li>✓ Deploy on your KloudBean server</li>
             </ul>
-            <a href="{% url 'platform:signup' %}" class="btn btn-ghost" style="width: 100%; margin-top: 1.5rem;">Get started</a>
+            <a href="{% url 'core:signup' %}" class="btn btn-ghost" style="width: 100%; margin-top: 1.5rem;">Get started</a>
         </div>
 
         <div style="background: var(--surface); border: 2px solid var(--accent); border-radius: var(--radius); padding: 2rem;">
@@ -28,7 +28,7 @@
                 <li style="margin-bottom: 0.5rem;">✓ AI-powered builder (add your API key)</li>
                 <li>✓ Your brand, your domain</li>
             </ul>
-            <a href="{% url 'platform:signup' %}" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Start Pro</a>
+            <a href="{% url 'core:signup' %}" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Start Pro</a>
         </div>
 
         <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">

@@ -1,4 +1,4 @@
-{% extends 'platform/base.html' %}
+{% extends 'core/base.html' %}
 {% block title %}Launch Your Own Lovable — Make Money. Deploy on KloudBean.{% endblock %}
 {% block content %}
 <div class="landing">
@@ -11,8 +11,8 @@
             This is the full product. Deploy it on KloudBean. Rebrand it. You're the CEO. Charge users. Keep the revenue.
         </p>
         <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 4rem;">
-            <a href="{% url 'platform:signup' %}" class="btn btn-primary" style="padding: 1rem 1.75rem; font-size: 1.1rem;">Get started — it's free</a>
-            <a href="{% url 'platform:pricing' %}" class="btn btn-ghost" style="padding: 1rem 1.75rem; font-size: 1.1rem;">See pricing</a>
+            <a href="{% url 'core:signup' %}" class="btn btn-primary" style="padding: 1rem 1.75rem; font-size: 1.1rem;">Get started — it's free</a>
+            <a href="{% url 'core:pricing' %}" class="btn btn-ghost" style="padding: 1rem 1.75rem; font-size: 1.1rem;">See pricing</a>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; text-align: left; max-width: 900px; margin: 0 auto;">
@@ -34,7 +34,7 @@
         </div>
 
         <p style="margin-top: 4rem; color: var(--muted); font-size: 0.9rem;">
-            One codebase. One deploy. You own the product. <a href="{% url 'platform:pricing' %}" style="color: var(--accent);">Start with Free →</a>
+            One codebase. One deploy. You own the product. <a href="{% url 'core:pricing' %}" style="color: var(--accent);">Start with Free →</a>
         </p>
     </div>
 </div>

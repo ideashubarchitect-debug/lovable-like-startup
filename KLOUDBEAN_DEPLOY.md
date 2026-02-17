@@ -1,5 +1,9 @@
 # Deploy this Django app on KloudBean
 
+## AttributeError: module 'platform' has no attribute 'system'
+
+If migration or gunicorn fails with this error, the app used to be named `platform`, which shadowed Python’s built-in `platform` module. **This repo now uses the `core` app** instead, so that error should be resolved. Pull the latest code and redeploy.
+
 ## Deployment path (fixes many failures)
 
 - **Application root must be the repository root** — where `manage.py`, `bean.conf`, and `requirements.txt` are.

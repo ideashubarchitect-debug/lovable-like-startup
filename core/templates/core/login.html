@@ -1,4 +1,4 @@
-{% extends 'platform/base.html' %}
+{% extends 'core/base.html' %}
 {% block title %}Log in — AppForge{% endblock %}
 {% block content %}
 <div class="container" style="max-width: 400px; padding-top: 3rem;">
@@ -17,7 +17,7 @@
         <button type="submit" class="btn btn-primary" style="width: 100%;">Log in</button>
     </form>
     <p style="margin-top: 1.25rem; color: var(--muted); font-size: 0.9rem;">
-        No account? <a href="{% url 'platform:signup' %}" style="color: var(--accent);">Sign up</a>
+        No account? <a href="{% url 'core:signup' %}" style="color: var(--accent);">Sign up</a>
     </p>
 </div>
 {% endblock %}

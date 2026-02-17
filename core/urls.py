@@ -1,13 +1,12 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
 from . import views
 
-app_name = 'platform'
+app_name = 'core'
 
 urlpatterns = [
     path('', views.landing, name='landing'),
-    path('login/', views.PlatformLoginView.as_view(), name='login'),
-    path('logout/', views.PlatformLogoutView.as_view(), name='logout'),
+    path('login/', views.CoreLoginView.as_view(), name='login'),
+    path('logout/', views.CoreLogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),
     path('pricing/', views.pricing, name='pricing'),
     path('dashboard/', views.dashboard, name='dashboard'),

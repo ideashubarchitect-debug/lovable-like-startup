@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'platform',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -87,7 +87,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Auth: redirect to platform login and dashboard
-LOGIN_URL = 'platform:login'
-LOGIN_REDIRECT_URL = 'platform:dashboard'
-LOGOUT_REDIRECT_URL = 'platform:landing'
+# Auth: redirect to core app login and dashboard
+LOGIN_URL = 'core:login'
+LOGIN_REDIRECT_URL = 'core:dashboard'
+LOGOUT_REDIRECT_URL = 'core:landing'

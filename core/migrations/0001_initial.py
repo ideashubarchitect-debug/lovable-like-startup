@@ -1,4 +1,4 @@
-# Generated migration for platform App model
+# Generated migration for core App model
 
 from django.conf import settings
 from django.db import migrations, models
