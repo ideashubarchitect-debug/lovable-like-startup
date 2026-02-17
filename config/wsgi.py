@@ -5,11 +5,10 @@ Exposed as application for KloudBean (bean.conf APP_NAME).
 import os
 import sys
 
-# Ensure stdlib 'platform' is used (leftover platform/ on server would break Django)
+# Only remove paths that have a platform/ PACKAGE (__init__.py), not stdlib platform.py
 _orig_path = list(sys.path)
-_shadowing = [p for p in _orig_path if p and (
-    os.path.exists(os.path.join(os.path.abspath(p), "platform", "__init__.py"))
-    or os.path.isfile(os.path.join(os.path.abspath(p), "platform.py"))
+_shadowing = [p for p in _orig_path if p and os.path.exists(
+    os.path.join(os.path.abspath(p), "platform", "__init__.py")
 )]
 for p in _shadowing:
     sys.path.remove(p)

@@ -3,12 +3,12 @@
 import os
 import sys
 
-# KloudBean fix: ensure stdlib 'platform' is used (server may have leftover platform/ dir
-# that shadows it and breaks uuid.py -> AttributeError: module 'platform' has no attribute 'system')
+# KloudBean fix: if a leftover platform/ PACKAGE (dir with __init__.py) shadows stdlib,
+# remove only that path so "import platform" gets the real one. Do NOT remove paths
+# that only have platform.py (that's the stdlib).
 _orig_path = list(sys.path)
-_shadowing = [p for p in _orig_path if p and (
-    os.path.exists(os.path.join(os.path.abspath(p), "platform", "__init__.py"))
-    or os.path.isfile(os.path.join(os.path.abspath(p), "platform.py"))
+_shadowing = [p for p in _orig_path if p and os.path.exists(
+    os.path.join(os.path.abspath(p), "platform", "__init__.py")
 )]
 for p in _shadowing:
     sys.path.remove(p)
