@@ -36,6 +36,10 @@ If the build fails with **"Module not found"** or **"Dependency is missing from 
 2. **If the missing module is `config` or `core`** — The app must run with the **project root as the current working directory** (so that `config` and `core` are importable). In KloudBean, the **Application directory** / **Working directory** for Gunicorn should be the same directory that contains `manage.py`, `config/`, and `core/`. Do not run from a parent or subdirectory.
 3. **Clean rebuild** — If a previous deploy left a broken venv, try a clean deploy (or remove the app’s virtualenv on the server and redeploy) so `pip install -r requirements.txt` runs again from scratch.
 
+## 502 Bad Gateway (app URL shows nginx 502)
+
+Nginx returns 502 when it can't get a valid response from Gunicorn. Check: (1) **Process Manager** — Gunicorn/Django process is running; restart if needed. (2) **Application / Error logs** — look for Python tracebacks. (3) Run **migrations** via SSH/terminal: `python manage.py migrate`. (4) **ALLOWED_HOSTS** — this repo now allows `.kloudbeansite.com` by default. (5) **Database** — if using SQLite, app directory must be writable for `db.sqlite3`.
+
 ## After a successful deploy
 
 1. SSH or use KloudBean’s terminal and go to the app directory.
