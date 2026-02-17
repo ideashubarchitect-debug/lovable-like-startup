@@ -28,6 +28,14 @@ adm: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found (required b
 3. **Contact KloudBean support** — Ask for a Django/Python runtime that uses a **newer base image** (glibc 2.32+), or use their recommended “Django” one-click app. The fix is on the host/image side, not in this app’s code.
 4. If KloudBean supports **Docker** or a **custom image**, use a image with newer glibc (e.g. `python:3.11-slim` on Debian Bookworm).
 
+## Module not found / Dependency missing from packages
+
+If the build fails with **"Module not found"** or **"Dependency is missing from packages"**:
+
+1. **All required packages are in `requirements.txt`** — Django, gunicorn, asgiref, sqlparse, tzdata. Ensure KloudBean runs **`pip install -r requirements.txt`** from the **app directory** (the folder that contains `requirements.txt` and `manage.py`). If your deploy path is `django-src`, that directory must contain `requirements.txt` and the install must run from there.
+2. **If the missing module is `config` or `core`** — The app must run with the **project root as the current working directory** (so that `config` and `core` are importable). In KloudBean, the **Application directory** / **Working directory** for Gunicorn should be the same directory that contains `manage.py`, `config/`, and `core/`. Do not run from a parent or subdirectory.
+3. **Clean rebuild** — If a previous deploy left a broken venv, try a clean deploy (or remove the app’s virtualenv on the server and redeploy) so `pip install -r requirements.txt` runs again from scratch.
+
 ## After a successful deploy
 
 1. SSH or use KloudBean’s terminal and go to the app directory.

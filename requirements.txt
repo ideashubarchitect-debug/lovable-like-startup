@@ -1,5 +1,8 @@
 # KloudBean Django - Dependencies
-# Pinned for compatibility with older GLIBC on shared hosting (avoid GLIBC_2.32+ errors)
+# Pin versions for reproducible builds. Include all direct + key transitive deps so build has every package.
 
 Django==4.2.11
 gunicorn==21.0.0
+asgiref>=3.7.2,<4
+sqlparse>=0.4.3
+tzdata
