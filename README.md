@@ -44,11 +44,21 @@ python manage.py runserver
 
 1. **Push to Git** — Push this repo to GitHub/GitLab.
 2. **Create app on KloudBean** — Django (or Python) app, choose plan.
-3. **Connect repo & deploy** — Deploy → connect repo, set app root to project root (where `manage.py` and `bean.conf` are). Pull & Deploy.
+3. **Connect repo & deploy** — Deploy → connect repo. **Important:** set **Deployment Path** to the **repository root** (where `manage.py` and `bean.conf` are). Do **not** use a subfolder like `django-src` unless your repo has the app inside that folder; this repo’s root is the app root. Then Pull & Deploy.
 4. **Migrations & superuser** — SSH/Terminal on KloudBean: `python manage.py migrate` and `python manage.py createsuperuser`.
 5. **Env vars** — Set `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, `ALLOWED_HOSTS=your-domain.com`.
 
 The product is live. Rebrand the name (AppForge → your brand), point your domain, set your pricing. You're running your own Lovable on KloudBean.
+
+### If you see "GLIBC_2.32 / GLIBC_2.34 not found" (deployment fails)
+
+This means the server image has an older GNU C Library than the deployment tool or a dependency expects.
+
+- **What we did in this repo:** Dependencies are pinned (Django 4.2.11, Gunicorn 21.0.0) to use versions that are more likely to work on older glibc.
+- **What you should do on KloudBean:**
+  1. **Deployment path:** Ensure the app root is the **repo root** (where `manage.py` and `bean.conf` live). If the UI says "Deployment Path: django-src", change it to the root of the cloned repo (often empty or `/`) so KloudBean runs from the correct directory.
+  2. **Ask KloudBean support** for a Django/Python stack that runs on a **newer base image** (e.g. Ubuntu 22.04 or similar with glibc 2.34+), or use their recommended “Django” one-click app if it uses a compatible image.
+  3. If they offer a **Docker** or **custom runtime** option, you can use an image with a newer glibc (e.g. `python:3.11-slim` based on Debian Bookworm).
 
 ---
 

@@ -1,5 +1,5 @@
-# KloudBean Django Example - Dependencies
-# For YouTube tutorial: How to host Django Python app on KloudBean
+# KloudBean Django - Dependencies
+# Pinned for compatibility with older GLIBC on shared hosting (avoid GLIBC_2.32+ errors)
 
-Django>=4.2,<5.1
-gunicorn>=21.0,<23.0
+Django==4.2.11
+gunicorn==21.0.0
