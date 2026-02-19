@@ -2,6 +2,10 @@
 
 This project is aligned with [KloudBean Django deployment docs](https://support.kloudbean.com/docs/application-deployment/deploying-django): `bean.conf` format (`APP_NAME=<project-folder>.wsgi:application`, `APP_DIR=/`, `WORKERS`), `.env` variables (`APP_URL`, `DB_HOST`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`), and code in `django-src`.
 
+## ValueError: Invalid file descriptor: -1 (gthread worker)
+
+If workers exit with `ValueError: Invalid file descriptor: -1` in `murder_keepalived`, it's a known gthread keepalive bug. This repo includes **`gunicorn.conf.py`** that sets **`worker_class = "sync"`** so Gunicorn uses sync workers instead of gthread. Ensure Gunicorn is started from the app root (django-src) so it loads `gunicorn.conf.py`.
+
 ## Error: class uri 'gthread' invalid ... AttributeError: module 'platform' has no attribute 'system'
 
 Gunicorn can hit this when a leftover **platform/** directory on the server shadows the stdlib. Fix: (1) **Remove the dir** — SSH and run `rm -rf /home/admin/hosted-sites/kb_ulwo8n34lt/django-src/platform`, then restart. (2) **Use the wrapper** — If KloudBean allows a custom start command, run `python3 run_gunicorn.py config.wsgi:application` (see **run_gunicorn.py** in the repo); it patches `platform` before Gunicorn loads.
