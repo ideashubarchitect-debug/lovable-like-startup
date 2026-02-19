@@ -70,10 +70,33 @@ DJANGO_DEBUG=1
 
 Redeploy or restart the app, then reproduce the error — you’ll get the full traceback and request details. **When done, set `DJANGO_DEBUG=0` or remove it** so production doesn’t expose sensitive data.
 
+## Table '...core_app' (or other) doesn't exist / No migrations to apply but 500 on dashboard
+
+This usually means **migrate ran against a different database than the app uses**. The app at runtime uses **MySQL** (from your .env: `DB_ENGINE=mysql`, `DB_NAME`, etc.). If you run `python3 manage.py migrate` in SSH **without** those env vars, Django uses the default **SQLite** and creates tables in `db.sqlite3`; the web app then hits MySQL and the tables aren’t there.
+
+**Fix:** Ensure a **.env** file exists in the app directory (same folder as `manage.py`) with your MySQL settings, e.g.:
+
+```bash
+DB_ENGINE=mysql
+DB_HOST=localhost
+DB_NAME=kb_ulwo8n34lt
+DB_USERNAME=...
+DB_PASSWORD=...
+```
+
+This repo’s **manage.py** loads that `.env` when you run commands, so `python3 manage.py migrate` will use MySQL. Then run again:
+
+```bash
+cd /home/admin/hosted-sites/kb_ulwo8n34lt/django-src
+python3 manage.py migrate
+```
+
+Migrations will be applied to MySQL and the dashboard should work.
+
 ## After a successful deploy
 
-1. SSH or use KloudBean’s terminal and go to the app directory.
-2. Go to the app directory (path from deployment logs, e.g. `cd /home/admin/hosted-sites/kb_ulwo8n34lt/django-src`).
-3. Use **python3** (not `python`). Run: `python3 manage.py migrate`
+1. SSH or use KloudBean’s terminal and go to the app directory (e.g. `cd /home/admin/hosted-sites/kb_ulwo8n34lt/django-src`).
+2. Ensure **.env** is present with `DB_ENGINE=mysql` and DB_* so that `migrate` uses the same database as the app (see “Table ... doesn’t exist” above).
+3. Run: `python3 manage.py migrate`
 4. Run: `python3 manage.py createsuperuser` (for admin).
 5. Set env vars: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, `ALLOWED_HOSTS=your-domain.com`.

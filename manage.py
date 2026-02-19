@@ -3,6 +3,18 @@
 import os
 import sys
 
+# Load .env from project root so "manage.py migrate" etc. use same DB as the app (MySQL on KloudBean).
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+if os.path.isfile(_env_path):
+    with open(_env_path, encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                k, v = line.split('=', 1)
+                k, v = k.strip(), v.strip()
+                if k:
+                    os.environ.setdefault(k, v)
+
 # KloudBean fix: if a leftover platform/ PACKAGE (dir with __init__.py) shadows stdlib,
 # remove only that path so "import platform" gets the real one. Do NOT remove paths
 # that only have platform.py (that's the stdlib).
