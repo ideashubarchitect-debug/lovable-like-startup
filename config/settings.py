@@ -25,6 +25,19 @@ ALLOWED_HOSTS = [
     if h.strip()
 ]
 
+# CSRF: when app is behind HTTPS (e.g. KloudBean), Django must trust the origin or Referer check fails (403).
+# Set APP_URL in .env (e.g. https://django-642200409.kloudbeansite.com) or CSRF_TRUSTED_ORIGINS (comma-separated).
+_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '').strip()
+if not _origins:
+    _app_url = os.environ.get('APP_URL', '').strip().rstrip('/')
+    if _app_url and not _app_url.startswith('http'):
+        _app_url = 'https://' + _app_url
+    _origins = _app_url or ''
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in _origins.split(',') if o.strip()]
+# So Django sees the request as HTTPS when the proxy sends X-Forwarded-Proto
+if os.environ.get('USE_X_FORWARDED_PROTO', 'true').lower() in ('true', '1', 'yes'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

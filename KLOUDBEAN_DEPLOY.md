@@ -50,6 +50,16 @@ If the build fails with **"Module not found"** or **"Dependency is missing from 
 
 Nginx returns 502 when it can't get a valid response from Gunicorn. Check: (1) **Process Manager** — Gunicorn/Django process is running; restart if needed. (2) **Application / Error logs** — look for Python tracebacks. (3) Run **migrations** via SSH/terminal: `python manage.py migrate`. (4) **ALLOWED_HOSTS** — this repo now allows `.kloudbeansite.com` by default. (5) **Database** — if using SQLite, app directory must be writable for `db.sqlite3`.
 
+## 403 Forbidden — CSRF verification failed
+
+If signup/login (or any POST form) returns **403 CSRF verification failed**, the app is behind HTTPS but Django didn’t trust the request origin. Ensure **APP_URL** in your **.env** is set to the full public URL **with `https://`**, e.g.:
+
+```bash
+APP_URL=https://django-642200409.kloudbeansite.com
+```
+
+Redeploy or restart the app. This repo uses `APP_URL` to set `CSRF_TRUSTED_ORIGINS` so the Referer from your domain is accepted. Optionally set **CSRF_TRUSTED_ORIGINS** explicitly (comma-separated list of origins) if you use multiple domains.
+
 ## Debugging 500 errors (see full traceback)
 
 To see the detailed Django error page instead of a generic 500, enable debug temporarily. In your app’s **.env** (or KloudBean env vars) set:
