@@ -65,15 +65,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database - SQLite for example; use PostgreSQL/MySQL on KloudBean for production
+# Database: SQLite by default; MySQL on KloudBean when DB_* env vars are set
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# On KloudBean you can set DATABASE_URL and use dj-database-url for PostgreSQL/MySQL
+if os.environ.get('DB_ENGINE') == 'mysql':
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
+        'OPTIONS': {'charset': 'utf8mb4'},
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

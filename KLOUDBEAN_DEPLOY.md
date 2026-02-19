@@ -43,6 +43,7 @@ Nginx returns 502 when it can't get a valid response from Gunicorn. Check: (1) *
 ## After a successful deploy
 
 1. SSH or use KloudBean’s terminal and go to the app directory.
-2. Run: `python manage.py migrate`
-3. Run: `python manage.py createsuperuser` (for admin).
-4. Set env vars: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, `ALLOWED_HOSTS=your-domain.com`.
+2. Go to the app directory (path from deployment logs, e.g. `cd /home/admin/hosted-sites/kb_ulwo8n34lt/django-src`).
+3. Use **python3** (not `python`). Run: `python3 manage.py migrate`
+4. Run: `python3 manage.py createsuperuser` (for admin).
+5. Set env vars: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, `ALLOWED_HOSTS=your-domain.com`.

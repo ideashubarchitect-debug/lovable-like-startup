@@ -24,3 +24,7 @@ Thumbs.db
 # Env
 .env
 .env.local
+.env.production
+
+# Optional: uncomment to avoid committing credentials
+# KLOUDBEAN_FULL_SETUP.md

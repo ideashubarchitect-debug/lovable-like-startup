@@ -17,6 +17,8 @@
 
 When you deploy this on KloudBean and point a domain at it, you have a live SaaS that you can rebrand and monetize. Your video can show: build this once, deploy on KloudBean, you're running your own Lovable.
 
+**KloudBean:** Full credentials, `.env` production setup, and Python version (3.10) are in **`KLOUDBEAN_FULL_SETUP.md`**. Use **`runtime.txt`** (python-3.10) and **`bean.conf`** as in the repo. See **`.env.example`** for production env vars.
+
 ---
 
 ## Run locally
