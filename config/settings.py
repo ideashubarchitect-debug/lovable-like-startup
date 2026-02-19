@@ -15,7 +15,8 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ('true', '1', 'yes')
+# Set DJANGO_DEBUG=1 or true in .env to see detailed 500 error pages; set to 0/false when done.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 # Allow KloudBean default domain if ALLOWED_HOSTS not set
 ALLOWED_HOSTS = [

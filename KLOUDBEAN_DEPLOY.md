@@ -50,6 +50,16 @@ If the build fails with **"Module not found"** or **"Dependency is missing from 
 
 Nginx returns 502 when it can't get a valid response from Gunicorn. Check: (1) **Process Manager** — Gunicorn/Django process is running; restart if needed. (2) **Application / Error logs** — look for Python tracebacks. (3) Run **migrations** via SSH/terminal: `python manage.py migrate`. (4) **ALLOWED_HOSTS** — this repo now allows `.kloudbeansite.com` by default. (5) **Database** — if using SQLite, app directory must be writable for `db.sqlite3`.
 
+## Debugging 500 errors (see full traceback)
+
+To see the detailed Django error page instead of a generic 500, enable debug temporarily. In your app’s **.env** (or KloudBean env vars) set:
+
+```bash
+DJANGO_DEBUG=1
+```
+
+Redeploy or restart the app, then reproduce the error — you’ll get the full traceback and request details. **When done, set `DJANGO_DEBUG=0` or remove it** so production doesn’t expose sensitive data.
+
 ## After a successful deploy
 
 1. SSH or use KloudBean’s terminal and go to the app directory.
