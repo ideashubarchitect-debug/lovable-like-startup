@@ -34,12 +34,12 @@ DJANGO_SECRET_KEY=your-strong-secret-key-min-50-chars
 DJANGO_DEBUG=False
 ALLOWED_HOSTS=django-642200409.kloudbeansite.com,.kloudbeansite.com,localhost,127.0.0.1
 
-# Database (KloudBean MySQL – use values from Step 1)
+# Database (KloudBean uses DB_USERNAME per docs)
 DB_ENGINE=mysql
-DB_NAME=kb_ulwo8n34lt
-DB_USER=kb_ulwo8n34lt
-DB_PASSWORD=9RK3FXh8jSoazDq5T7
 DB_HOST=localhost
+DB_NAME=kb_ulwo8n34lt
+DB_USERNAME=kb_ulwo8n34lt
+DB_PASSWORD=9RK3FXh8jSoazDq5T7
 DB_PORT=3306
 ```
 

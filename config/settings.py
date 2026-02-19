@@ -73,10 +73,11 @@ DATABASES = {
     }
 }
 if os.environ.get('DB_ENGINE') == 'mysql':
+    # KloudBean .env uses DB_USERNAME (docs: https://support.kloudbean.com/docs/application-deployment/deploying-django)
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DB_NAME', ''),
-        'USER': os.environ.get('DB_USER', ''),
+        'USER': os.environ.get('DB_USERNAME') or os.environ.get('DB_USER', ''),
         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': os.environ.get('DB_PORT', '3306'),

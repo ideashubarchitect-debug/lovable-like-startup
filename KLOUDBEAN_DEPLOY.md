@@ -1,8 +1,14 @@
 # Deploy this Django app on KloudBean
 
-## AttributeError: module 'platform' has no attribute 'system'
+This project is aligned with [KloudBean Django deployment docs](https://support.kloudbean.com/docs/application-deployment/deploying-django): `bean.conf` format (`APP_NAME=<project-folder>.wsgi:application`, `APP_DIR=/`, `WORKERS`), `.env` variables (`APP_URL`, `DB_HOST`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`), and code in `django-src`.
 
-If migration or gunicorn fails with this error, the app used to be named `platform`, which shadowed Python’s built-in `platform` module. **This repo now uses the `core` app** instead, so that error should be resolved. In addition, `manage.py` and `config/wsgi.py` now force the stdlib `platform` into `sys.modules` at startup, so a leftover `platform/` dir on the server won't break. Pull the latest code and redeploy. If it still fails, remove the leftover dir via SSH: `rm -rf .../django-src/platform`.
+## Error: class uri 'gthread' invalid ... AttributeError: module 'platform' has no attribute 'system'
+
+Gunicorn can hit this when a leftover **platform/** directory on the server shadows the stdlib. Fix: (1) **Remove the dir** — SSH and run `rm -rf /home/admin/hosted-sites/kb_ulwo8n34lt/django-src/platform`, then restart. (2) **Use the wrapper** — If KloudBean allows a custom start command, run `python3 run_gunicorn.py config.wsgi:application` (see **run_gunicorn.py** in the repo); it patches `platform` before Gunicorn loads.
+
+## AttributeError: module 'platform' has no attribute 'system' (manage.py / migrate)
+
+If migration or gunicorn fails with this error (without the gthread line), the app used to be named `platform`, which shadowed Python’s built-in `platform` module. **This repo now uses the `core` app** instead, so that error should be resolved. In addition, `manage.py` and `config/wsgi.py` now force the stdlib `platform` into `sys.modules` at startup, so a leftover `platform/` dir on the server won't break. Pull the latest code and redeploy. If it still fails, remove the leftover dir via SSH: `rm -rf .../django-src/platform`.
 
 ## Deployment path (fixes many failures)
 
