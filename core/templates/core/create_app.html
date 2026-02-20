@@ -12,11 +12,17 @@
             {% if form.name.errors %}<p style="color: #f87171; font-size: 0.85rem; margin-top: 0.35rem;">{{ form.name.errors.0 }}</p>{% endif %}
         </div>
         <div class="form-group">
-            <label for="id_description">What do you want to build?</label>
+            <label for="id_template">Template</label>
+            {{ form.template }}
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem;">Landing page, SaaS, or Portfolio. You can edit content after.</p>
+            {% if form.template.errors %}<p style="color: #f87171; font-size: 0.85rem; margin-top: 0.35rem;">{{ form.template.errors.0 }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+            <label for="id_description">What do you want to build? (optional)</label>
             {{ form.description }}
             {% if form.description.errors %}<p style="color: #f87171; font-size: 0.85rem; margin-top: 0.35rem;">{{ form.description.errors.0 }}</p>{% endif %}
         </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Build my app</button>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Create app</button>
     </form>
 </div>
 {% endblock %}

@@ -1,24 +1,105 @@
 {% extends 'core/base.html' %}
 {% block title %}{{ app.name }} — AppForge{% endblock %}
 {% block content %}
-<div class="container" style="max-width: 640px; padding-top: 2rem;">
+<div class="container" style="max-width: 720px; padding-top: 2rem;">
     <a href="{% url 'core:dashboard' %}" style="color: var(--muted); font-size: 0.9rem; text-decoration: none; margin-bottom: 1rem; display: inline-block;">← Dashboard</a>
-    <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem;">{{ app.name }}</h1>
-    <p style="color: var(--muted); margin-bottom: 1.5rem;">{{ app.description|default:"No description" }}</p>
-    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-        <span style="font-size: 0.85rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: var(--border); color: var(--muted); text-transform: capitalize;">{{ app.status }}</span>
+
+    <form method="post" action="" style="margin-bottom: 2rem;">
+        {% csrf_token %}
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+            <h1 style="font-size: 1.5rem;">Edit app</h1>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-size: 0.85rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: var(--border); color: var(--muted); text-transform: capitalize;">{{ app.status }}</span>
+                {% if app.published %}
+                <span style="font-size: 0.85rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: rgba(52,211,153,0.2); color: var(--success);">Published</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name">App name</label>
+            {{ form.name }}
+            {{ form.name.errors }}
+        </div>
+        <div class="form-group">
+            <label for="id_slug">URL slug</label>
+            {{ form.slug }}
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem;">Public URL: /a/{{ form.slug.value|default:app.slug }}/</p>
+            {{ form.slug.errors }}
+        </div>
+        <div class="form-group">
+            <label for="id_description">Description</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+            {{ form.published }}
+            <label for="id_published" style="margin-bottom: 0;">Published (public can view at /a/{{ app.slug }}/)</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    </form>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Preview & public link</h3>
+        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">Share this link when published. You can always preview before publishing.</p>
+        <a href="{% url 'core:app_public' app.slug %}" target="_blank" rel="noopener" class="btn btn-ghost">Open {{ app.published|yesno:"live page,preview" }} →</a>
     </div>
 
     <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
-        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Preview</h3>
-        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">Your app is built from your description. Connect AI in production to generate real UIs.</p>
-        <a href="{% url 'core:app_preview' app.pk %}" target="_blank" rel="noopener" class="btn btn-ghost">Open preview →</a>
+        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Edit sections (hero, features, pricing)</h3>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Update the JSON below and click Save. Each section has type, title, subtitle, etc.</p>
+        <textarea id="sections-json" class="input" rows="14" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">{{ sections_json }}</textarea>
+        <p style="color: #f87171; font-size: 0.85rem; margin-top: 0.5rem; display: none;" id="sections-error">Invalid JSON. Fix and try again.</p>
+        <button type="button" id="save-sections" class="btn btn-primary" style="margin-top: 0.75rem;">Save sections</button>
     </div>
 
     <div style="background: linear-gradient(135deg, rgba(167,139,250,0.1) 0%, rgba(139,92,246,0.05) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
         <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Deploy on KloudBean</h3>
-        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">This whole product runs on KloudBean. Deploy once, rebrand, start charging. You're the CEO.</p>
-        <a href="https://www.kloudbean.com/django-hosting/" target="_blank" rel="noopener" class="btn btn-primary">Launch on KloudBean →</a>
+        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">This product runs on KloudBean. Deploy once, rebrand, launch.</p>
+        <a href="https://www.kloudbean.com/django-hosting/" target="_blank" rel="noopener" class="btn btn-primary">Learn more →</a>
     </div>
 </div>
+<script>
+(function() {
+    var btn = document.getElementById('save-sections');
+    var ta = document.getElementById('sections-json');
+    var err = document.getElementById('sections-error');
+    btn.addEventListener('click', function() {
+        err.style.display = 'none';
+        var data;
+        try {
+            data = JSON.parse(ta.value);
+        } catch (e) {
+            err.style.display = 'block';
+            return;
+        }
+        if (!Array.isArray(data)) {
+            err.style.display = 'block';
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+        fetch('{% url "core:app_sections_save" app.pk %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+            body: JSON.stringify(data)
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            btn.disabled = false;
+            btn.textContent = 'Save sections';
+            if (res.ok) {
+                btn.textContent = 'Saved ✓';
+                setTimeout(function() { btn.textContent = 'Save sections'; }, 2000);
+            } else {
+                err.style.display = 'block';
+            }
+        })
+        .catch(function() {
+            btn.disabled = false;
+            btn.textContent = 'Save sections';
+            err.style.display = 'block';
+        });
+    });
+})();
+</script>
 {% endblock %}

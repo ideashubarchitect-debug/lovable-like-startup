@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+{% block title %}Profile — AppForge{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 480px; padding-top: 2rem;">
+    <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Profile</h1>
+    <p style="color: var(--muted); margin-bottom: 1.5rem;">Account settings.</p>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem;">
+        <p style="margin-bottom: 0.25rem;"><strong>Username</strong></p>
+        <p style="color: var(--muted);">{{ user.username }}</p>
+        {% if user.email %}
+        <p style="margin-top: 1rem; margin-bottom: 0.25rem;"><strong>Email</strong></p>
+        <p style="color: var(--muted);">{{ user.email }}</p>
+        {% endif %}
+    </div>
+    <a href="{% url 'core:password_change' %}" class="btn btn-ghost">Change password</a>
+    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--muted);">
+        <a href="{% url 'core:dashboard' %}" style="color: var(--accent);">← Dashboard</a>
+    </p>
+</div>
+{% endblock %}

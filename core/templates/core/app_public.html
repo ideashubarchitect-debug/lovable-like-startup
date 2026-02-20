@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app.name }}{% if is_preview %} — Preview{% endif %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0a0a0f; --surface: #12121a; --border: #1e1e2a; --text: #f0f0f5; --muted: #71717a; --accent: #a78bfa; --accent-hover: #c4b5fd; --radius: 12px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
+        .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+        .hero { text-align: center; padding: 4rem 1rem 5rem; }
+        .hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
+        .hero .subtitle { font-size: 1.2rem; color: var(--muted); margin-bottom: 1.5rem; max-width: 560px; margin-left: auto; margin-right: auto; }
+        .hero .cta { display: inline-block; padding: 0.75rem 1.5rem; background: var(--accent); color: var(--bg); border-radius: var(--radius); font-weight: 600; text-decoration: none; transition: background 0.2s; }
+        .hero .cta:hover { background: var(--accent-hover); }
+        .section { padding: 3rem 1rem; border-top: 1px solid var(--border); }
+        .section h2 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .section .subheading { color: var(--muted); margin-bottom: 2rem; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+        .feature { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+        .feature h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .feature p { color: var(--muted); font-size: 0.95rem; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+        .plan { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; position: relative; }
+        .plan.highlight { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(167,139,250,0.2); }
+        .plan h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .plan .price { font-size: 1.75rem; font-weight: 700; }
+        .plan .period { color: var(--muted); font-size: 0.9rem; }
+        .plan ul { list-style: none; margin: 1rem 0; }
+        .plan li { padding: 0.35rem 0; color: var(--muted); font-size: 0.95rem; }
+        .plan .cta { display: inline-block; margin-top: 0.5rem; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+        .plan .cta.primary { background: var(--accent); color: var(--bg); }
+        .cta-section { text-align: center; padding: 4rem 1rem; }
+        .cta-section h2 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .cta-section .subtitle { color: var(--muted); margin-bottom: 1.5rem; }
+        .preview-badge { position: fixed; top: 0; left: 0; right: 0; background: rgba(167,139,250,0.9); color: var(--bg); text-align: center; padding: 0.5rem; font-size: 0.85rem; font-weight: 600; z-index: 999; }
+    </style>
+</head>
+<body>
+    {% if is_preview %}
+    <div class="preview-badge">Preview — not published. Only you can see this.</div>
+    {% endif %}
+    {% for s in app.sections %}
+        {% if s.type == 'hero' %}
+        <section class="hero">
+            <h1>{{ s.title|default:app.name }}</h1>
+            <p class="subtitle">{{ s.subtitle }}</p>
+            <a href="{{ s.cta_url|default:'#' }}" class="cta">{{ s.cta_text|default:'Get started' }}</a>
+        </section>
+        {% elif s.type == 'features' %}
+        <section class="section">
+            <div class="container">
+                <h2>{{ s.heading|default:'Features' }}</h2>
+                <div class="features">
+                    {% for item in s.items %}
+                    <div class="feature">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% elif s.type == 'pricing' %}
+        <section class="section">
+            <div class="container">
+                <h2>{{ s.heading|default:'Pricing' }}</h2>
+                <p class="subheading">{{ s.subheading|default:'' }}</p>
+                <div class="pricing-grid">
+                    {% for plan in s.plans %}
+                    <div class="plan {% if plan.highlight %}highlight{% endif %}">
+                        <h3>{{ plan.name }}</h3>
+                        <span class="price">{{ plan.price }}</span><span class="period">{{ plan.period }}</span>
+                        <ul>
+                            {% for f in plan.features %}<li>{{ f }}</li>{% endfor %}
+                        </ul>
+                        <a href="#" class="cta {% if plan.highlight %}primary{% endif %}">{{ plan.cta }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% elif s.type == 'cta' %}
+        <section class="section cta-section">
+            <h2>{{ s.title }}</h2>
+            <p class="subtitle">{{ s.subtitle }}</p>
+            <a href="{{ s.cta_url|default:'#' }}" class="cta" style="display:inline-block; padding:0.75rem 1.5rem; background:var(--accent); color:var(--bg); border-radius:var(--radius); font-weight:600; text-decoration:none;">{{ s.cta_text|default:'Get started' }}</a>
+        </section>
+        {% endif %}
+    {% empty %}
+    <section class="hero">
+        <h1>{{ app.name }}</h1>
+        <p class="subtitle">{{ app.description|default:'Your app. Edit sections in the dashboard to build this page.' }}</p>
+    </section>
+    {% endfor %}
+</body>
+</html>
