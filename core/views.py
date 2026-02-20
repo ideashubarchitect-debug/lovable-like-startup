@@ -71,7 +71,7 @@ def create_app(request):
             if used_ai:
                 messages.success(request, f'"{app.name}" created from your description. Ask for changes with a prompt or publish.')
             else:
-                messages.success(request, f'"{app.name}" created. Set OPENAI_API_KEY for prompt-based generation, or edit sections manually.')
+                messages.success(request, f'"{app.name}" created. Set DEEPSEEK_API_KEY or OPENAI_API_KEY in env for AI generation, or edit in Settings.')
             return redirect('core:app_detail', pk=app.pk)
         else:
             messages.error(request, 'Please fix the errors below.')
@@ -115,7 +115,7 @@ def app_generate(request, pk):
     if not sections:
         return JsonResponse({
             'ok': False,
-            'error': 'Could not generate. Add OPENAI_API_KEY in env for AI, or edit sections manually.',
+            'error': 'Could not generate. Add DEEPSEEK_API_KEY or OPENAI_API_KEY in your .env or KloudBean env vars, then restart the app.',
         }, status=400)
     app.sections = sections
     app.save(update_fields=['sections', 'updated_at'])

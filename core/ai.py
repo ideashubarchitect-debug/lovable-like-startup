@@ -1,6 +1,6 @@
 """
 Generate or update website sections from natural-language prompts (Lovable-style).
-Uses OpenAI API; set OPENAI_API_KEY in env. Falls back to template if no key.
+Supports DeepSeek (DEEPSEEK_API_KEY) or OpenAI (OPENAI_API_KEY). Set one in env.
 """
 import json
 import os
@@ -16,21 +16,32 @@ Allowed section types: hero (title, subtitle, cta_text, cta_url), features (head
 Output the JSON array first, then the REPLY line. No markdown code blocks."""
 
 
-def generate_sections_from_prompt(prompt, current_sections=None, return_reply=False):
-    """
-    Call OpenAI to generate or update sections from a text prompt.
-    prompt: user description or change request.
-    current_sections: optional list of sections to modify.
-    return_reply: if True, return (sections, reply_message) else sections or None.
-    """
-    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
-    if not api_key:
-        return (None, None) if return_reply else None
-
+def _get_client_and_model():
+    """Return (openai_client, model_name). Prefer DeepSeek if DEEPSEEK_API_KEY set, else OpenAI."""
     try:
         import openai
-        client = openai.OpenAI(api_key=api_key)
     except Exception:
+        return None, None
+    deepseek_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+    openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if deepseek_key:
+        client = openai.OpenAI(api_key=deepseek_key, base_url="https://api.deepseek.com")
+        model = os.environ.get("DEEPSEEK_MODEL", "deepseek-chat")
+        return client, model
+    if openai_key:
+        client = openai.OpenAI(api_key=openai_key)
+        model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+        return client, model
+    return None, None
+
+
+def generate_sections_from_prompt(prompt, current_sections=None, return_reply=False):
+    """
+    Call AI (DeepSeek or OpenAI) to generate or update sections.
+    return_reply: if True, return (sections, reply_message) else sections or None.
+    """
+    client, model = _get_client_and_model()
+    if not client:
         return (None, None) if return_reply else None
 
     if current_sections:
@@ -50,7 +61,7 @@ def generate_sections_from_prompt(prompt, current_sections=None, return_reply=Fa
 
     try:
         response = client.chat.completions.create(
-            model=os.environ.get("OPENAI_MODEL", "gpt-4o-mini"),
+            model=model,
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_content},

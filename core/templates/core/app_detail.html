@@ -1,84 +1,73 @@
 {% extends 'core/base.html' %}
 {% block title %}{{ app.name }} — AppForge{% endblock %}
+{% block main_class %}main-full-bleed{% endblock %}
 {% block content %}
-<div class="container" style="max-width: 720px; padding-top: 2rem;">
-    <a href="{% url 'core:dashboard' %}" style="color: var(--muted); font-size: 0.9rem; text-decoration: none; margin-bottom: 1rem; display: inline-block;">← Dashboard</a>
+<style>
+.app-editor { display: flex; height: calc(100vh - 140px); min-height: 400px; }
+.app-editor-left { width: 420px; flex-shrink: 0; display: flex; flex-direction: column; border-right: 1px solid var(--border); background: var(--surface); }
+.app-editor-right { flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--bg); }
+.app-editor-header { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+.app-editor-chat { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.app-editor-prompt { padding: 1rem; border-top: 1px solid var(--border); }
+.app-editor-prompt-inner { display: flex; gap: 0.5rem; }
+.app-editor-prompt input { flex: 1; min-width: 0; }
+.preview-frame { flex: 1; width: 100%; border: none; background: #fff; min-height: 300px; }
+.chat-msg { max-width: 95%; }
+.chat-msg.user { align-self: flex-end; }
+.chat-msg.user span { display: inline-block; padding: 0.5rem 0.85rem; background: var(--accent); color: var(--bg); border-radius: 14px 14px 4px 14px; font-size: 0.9rem; }
+.chat-msg.assistant { align-self: flex-start; }
+.chat-msg.assistant span { display: inline-block; padding: 0.5rem 0.85rem; background: var(--border); border-radius: 14px 14px 14px 4px; font-size: 0.9rem; color: var(--text); }
+.chat-msg.typing { align-self: flex-start; color: var(--muted); font-style: italic; font-size: 0.9rem; }
+.app-editor-settings { padding: 1rem; border-top: 1px solid var(--border); font-size: 0.85rem; }
+.app-editor-settings summary { cursor: pointer; color: var(--muted); }
+.app-editor-settings-content { margin-top: 0.75rem; }
+</style>
 
-    <form method="post" action="" style="margin-bottom: 2rem;">
-        {% csrf_token %}
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-            <h1 style="font-size: 1.5rem;">Edit app</h1>
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <span style="font-size: 0.85rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: var(--border); color: var(--muted); text-transform: capitalize;">{{ app.status }}</span>
-                {% if app.published %}
-                <span style="font-size: 0.85rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: rgba(52,211,153,0.2); color: var(--success);">Published</span>
-                {% endif %}
+<div class="app-editor">
+    <div class="app-editor-left">
+        <div class="app-editor-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <a href="{% url 'core:dashboard' %}" style="color: var(--muted); text-decoration: none;">←</a>
+                <span style="font-weight: 600;">{{ app.name }}</span>
+                {% if app.published %}<span style="font-size: 0.75rem; color: var(--success);">Live</span>{% endif %}
             </div>
+            <a href="{% url 'core:app_public' app.slug %}" target="_blank" rel="noopener" style="font-size: 0.85rem; color: var(--accent);">Open in new tab</a>
         </div>
-        <div class="form-group">
-            <label for="id_name">App name</label>
-            {{ form.name }}
-            {{ form.name.errors }}
+        <div id="chat-messages" class="app-editor-chat">
+            <div id="chat-placeholder" style="color: var(--muted); font-size: 0.9rem; text-align: center; padding: 1rem;">Describe what you want. e.g. "Build me a modern bakery website with dark mode and online menu" or "Add a testimonials section"</div>
         </div>
-        <div class="form-group">
-            <label for="id_slug">URL slug</label>
-            {{ form.slug }}
-            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem;">Public URL: /a/{{ form.slug.value|default:app.slug }}/</p>
-            {{ form.slug.errors }}
+        <div class="app-editor-prompt">
+            <div class="app-editor-prompt-inner">
+                <input type="text" id="ai-prompt" class="input" placeholder="Describe changes or your idea…" autocomplete="off">
+                <button type="button" id="apply-prompt" class="btn btn-primary">Send</button>
+            </div>
+            <p style="color: #f87171; font-size: 0.8rem; margin-top: 0.5rem; display: none;" id="ai-error"></p>
         </div>
-        <div class="form-group">
-            <label for="id_description">Description</label>
-            {{ form.description }}
-            {{ form.description.errors }}
-        </div>
-        <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
-            {{ form.published }}
-            <label for="id_published" style="margin-bottom: 0;">Published (public can view at /a/{{ app.slug }}/)</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Save changes</button>
-    </form>
-
-    <div class="chat-card" style="background: linear-gradient(135deg, rgba(167,139,250,0.12) 0%, rgba(139,92,246,0.06) 100%); border: 1px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
-        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;">💬 Chat — explain ideas, get changes & creations</h3>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Describe what you want: new sections, copy changes, or full page ideas. The AI will update this app.</p>
-        <div id="chat-messages" style="min-height: 80px; max-height: 280px; overflow-y: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; font-size: 0.9rem;">
-            <div id="chat-placeholder" style="color: var(--muted); text-align: center; padding: 0.5rem;">Send a message to start. e.g. "Add a testimonials section" or "Make the hero more punchy"</div>
-        </div>
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <input type="text" id="ai-prompt" class="input" placeholder="Describe changes or your idea…" style="flex: 1; min-width: 200px;">
-            <button type="button" id="apply-prompt" class="btn btn-primary">Send</button>
-        </div>
-        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem;">Uses OPENAI_API_KEY. You can also edit JSON below.</p>
-        <p style="color: #f87171; font-size: 0.85rem; margin-top: 0.5rem; display: none;" id="ai-error"></p>
+        <details class="app-editor-settings">
+            <summary>Settings &amp; advanced</summary>
+            <div class="app-editor-settings-content">
+                <form method="post" action="" style="margin-bottom: 1rem;">
+                    {% csrf_token %}
+                    <div class="form-group"><label>Name</label>{{ form.name }}</div>
+                    <div class="form-group"><label>URL slug</label>{{ form.slug }}</div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">{{ form.published }}<label style="margin:0;">Published</label></div>
+                    <button type="submit" class="btn btn-ghost" style="font-size: 0.9rem;">Save</button>
+                </form>
+                <label style="font-size: 0.85rem;">Edit JSON</label>
+                <textarea id="sections-json" class="input" rows="6" style="font-family: monospace; font-size: 0.8rem; margin-top: 0.35rem; width: 100%;">{{ sections_json }}</textarea>
+                <button type="button" id="save-sections" class="btn btn-ghost" style="margin-top: 0.5rem; font-size: 0.85rem;">Save sections</button>
+                <p style="color: #f87171; font-size: 0.8rem; margin-top: 0.35rem; display: none;" id="sections-error">Invalid JSON</p>
+            </div>
+        </details>
     </div>
-
-    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
-        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Preview & public link</h3>
-        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">Share this link when published. You can always preview before publishing.</p>
-        <a href="{% url 'core:app_public' app.slug %}" target="_blank" rel="noopener" class="btn btn-ghost">Open {{ app.published|yesno:"live page,preview" }} →</a>
-    </div>
-
-    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
-        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Edit sections (hero, features, pricing)</h3>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Update the JSON below and click Save. Each section has type, title, subtitle, etc.</p>
-        <textarea id="sections-json" class="input" rows="14" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">{{ sections_json }}</textarea>
-        <p style="color: #f87171; font-size: 0.85rem; margin-top: 0.5rem; display: none;" id="sections-error">Invalid JSON. Fix and try again.</p>
-        <button type="button" id="save-sections" class="btn btn-primary" style="margin-top: 0.75rem;">Save sections</button>
-    </div>
-
-    <div style="background: linear-gradient(135deg, rgba(167,139,250,0.1) 0%, rgba(139,92,246,0.05) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
-        <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Deploy on KloudBean</h3>
-        <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">This product runs on KloudBean. Deploy once, rebrand, launch.</p>
-        <a href="https://www.kloudbean.com/django-hosting/" target="_blank" rel="noopener" class="btn btn-primary">Learn more →</a>
+    <div class="app-editor-right">
+        <div class="app-editor-header" style="padding: 0.5rem 1rem;">
+            <span style="font-size: 0.85rem; color: var(--muted);">Preview</span>
+        </div>
+        <iframe id="preview-iframe" class="preview-frame" src="{% url 'core:app_public' app.slug %}" title="Preview"></iframe>
     </div>
 </div>
-<style>
-.chat-msg { margin-bottom: 0.75rem; }
-.chat-msg.user { text-align: right; }
-.chat-msg.user span { display: inline-block; max-width: 85%; padding: 0.5rem 0.75rem; background: var(--accent); color: var(--bg); border-radius: 10px 10px 2px 10px; font-size: 0.9rem; }
-.chat-msg.assistant span { display: inline-block; max-width: 90%; padding: 0.5rem 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px 10px 10px 2px; font-size: 0.9rem; color: var(--text); text-align: left; }
-.chat-msg.typing { color: var(--muted); font-style: italic; }
-</style>
+
 <script>
 (function() {
     var csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -87,6 +76,8 @@
     var aiError = document.getElementById('ai-error');
     var chatMessages = document.getElementById('chat-messages');
     var chatPlaceholder = document.getElementById('chat-placeholder');
+    var previewIframe = document.getElementById('preview-iframe');
+
     function addMessage(role, text) {
         if (chatPlaceholder) chatPlaceholder.style.display = 'none';
         var div = document.createElement('div');
@@ -101,6 +92,12 @@
         var t = document.getElementById('chat-typing');
         if (t) t.remove();
     }
+    function refreshPreview() {
+        if (previewIframe && previewIframe.src) {
+            previewIframe.src = previewIframe.src.split('?')[0] + '?t=' + Date.now();
+        }
+    }
+
     if (applyBtn && promptInput) {
         applyBtn.addEventListener('click', function() {
             var prompt = (promptInput.value || '').trim();
@@ -113,7 +110,7 @@
             var typing = document.createElement('div');
             typing.id = 'chat-typing';
             typing.className = 'chat-msg assistant typing';
-            typing.innerHTML = '<span>Thinking…</span>';
+            typing.innerHTML = '<span>Building…</span>';
             chatMessages.appendChild(typing);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             fetch('{% url "core:app_generate" app.pk %}', {
@@ -127,10 +124,12 @@
                 applyBtn.disabled = false;
                 applyBtn.textContent = 'Send';
                 if (res.ok && res.sections) {
-                    addMessage('assistant', res.message || "I've applied your changes.");
-                    document.getElementById('sections-json').value = JSON.stringify(res.sections, null, 2);
+                    addMessage('assistant', res.message || "Done. Check the preview.");
+                    var ta = document.getElementById('sections-json');
+                    if (ta) ta.value = JSON.stringify(res.sections, null, 2);
+                    refreshPreview();
                 } else {
-                    addMessage('assistant', res.error || 'Something went wrong. Check OPENAI_API_KEY or try again.');
+                    addMessage('assistant', res.error || 'Something went wrong.');
                 }
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             })
@@ -147,46 +146,31 @@
             if (e.key === 'Enter') { e.preventDefault(); applyBtn.click(); }
         });
     }
+
     var btn = document.getElementById('save-sections');
     var ta = document.getElementById('sections-json');
     var err = document.getElementById('sections-error');
-    btn.addEventListener('click', function() {
-        err.style.display = 'none';
-        var data;
-        try {
-            data = JSON.parse(ta.value);
-        } catch (e) {
-            err.style.display = 'block';
-            return;
-        }
-        if (!Array.isArray(data)) {
-            err.style.display = 'block';
-            return;
-        }
-        btn.disabled = true;
-        btn.textContent = 'Saving…';
-        fetch('{% url "core:app_sections_save" app.pk %}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
-            body: JSON.stringify(data)
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(res) {
-            btn.disabled = false;
-            btn.textContent = 'Save sections';
-            if (res.ok) {
-                btn.textContent = 'Saved ✓';
-                setTimeout(function() { btn.textContent = 'Save sections'; }, 2000);
-            } else {
-                err.style.display = 'block';
-            }
-        })
-        .catch(function() {
-            btn.disabled = false;
-            btn.textContent = 'Save sections';
-            err.style.display = 'block';
+    if (btn && ta) {
+        btn.addEventListener('click', function() {
+            err.style.display = 'none';
+            var data;
+            try { data = JSON.parse(ta.value); } catch (e) { err.style.display = 'block'; return; }
+            if (!Array.isArray(data)) { err.style.display = 'block'; return; }
+            btn.disabled = true;
+            fetch('{% url "core:app_sections_save" app.pk %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+                body: JSON.stringify(data)
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                btn.disabled = false;
+                if (res.ok) { refreshPreview(); }
+                else { err.style.display = 'block'; }
+            })
+            .catch(function() { btn.disabled = false; err.style.display = 'block'; });
         });
-    });
+    }
 })();
 </script>
 {% endblock %}

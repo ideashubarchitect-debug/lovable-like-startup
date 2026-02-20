@@ -91,6 +91,7 @@
         .messages .success { background: rgba(52, 211, 153, 0.15); color: var(--success); }
         .messages .error { background: rgba(239, 68, 68, 0.15); color: #f87171; }
         main { padding: 2rem 0 4rem; }
+        main.main-full-bleed { padding: 0; }
         {% block extra_css %}{% endblock %}
     </style>
     {% block head %}{% endblock %}
@@ -113,7 +114,7 @@
             </div>
         </div>
     </nav>
-    <main>
+    <main class="{% block main_class %}{% endblock %}">
         {% if messages %}
             <div class="container">
                 <ul class="messages">
