@@ -2,13 +2,24 @@
 {% block title %}Dashboard — AppForge{% endblock %}
 {% block content %}
 <div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
         <div>
             <h1 style="font-size: 1.75rem;">Your apps</h1>
-            <p style="color: var(--muted); margin-top: 0.25rem;">Build, preview, deploy. You're the CEO.</p>
+            <p style="color: var(--muted); margin-top: 0.25rem;">Chat to build, prompt to modify. Publish when ready.</p>
         </div>
         <a href="{% url 'core:create_app' %}" class="btn btn-primary">+ New app</a>
     </div>
+
+    <a href="{% url 'core:create_app' %}" style="display: block; background: linear-gradient(135deg, rgba(167,139,250,0.15) 0%, rgba(139,92,246,0.08) 100%); border: 1px solid var(--accent); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 2rem; text-decoration: none; color: inherit;">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <span style="font-size: 1.75rem;">💬</span>
+            <div>
+                <strong style="font-size: 1.05rem;">Build with AI — explain your idea</strong>
+                <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem;">Describe the website or app you want in plain English. We'll generate it, then you can chat to refine it.</p>
+            </div>
+            <span style="margin-left: auto; color: var(--accent); font-weight: 600;">Create app →</span>
+        </div>
+    </a>
 
     {% if apps %}
         <div style="display: grid; gap: 1rem;">

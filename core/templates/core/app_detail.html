@@ -38,6 +38,20 @@
         <button type="submit" class="btn btn-primary">Save changes</button>
     </form>
 
+    <div class="chat-card" style="background: linear-gradient(135deg, rgba(167,139,250,0.12) 0%, rgba(139,92,246,0.06) 100%); border: 1px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;">💬 Chat — explain ideas, get changes & creations</h3>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Describe what you want: new sections, copy changes, or full page ideas. The AI will update this app.</p>
+        <div id="chat-messages" style="min-height: 80px; max-height: 280px; overflow-y: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; font-size: 0.9rem;">
+            <div id="chat-placeholder" style="color: var(--muted); text-align: center; padding: 0.5rem;">Send a message to start. e.g. "Add a testimonials section" or "Make the hero more punchy"</div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <input type="text" id="ai-prompt" class="input" placeholder="Describe changes or your idea…" style="flex: 1; min-width: 200px;">
+            <button type="button" id="apply-prompt" class="btn btn-primary">Send</button>
+        </div>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem;">Uses OPENAI_API_KEY. You can also edit JSON below.</p>
+        <p style="color: #f87171; font-size: 0.85rem; margin-top: 0.5rem; display: none;" id="ai-error"></p>
+    </div>
+
     <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
         <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Preview & public link</h3>
         <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem;">Share this link when published. You can always preview before publishing.</p>
@@ -58,8 +72,81 @@
         <a href="https://www.kloudbean.com/django-hosting/" target="_blank" rel="noopener" class="btn btn-primary">Learn more →</a>
     </div>
 </div>
+<style>
+.chat-msg { margin-bottom: 0.75rem; }
+.chat-msg.user { text-align: right; }
+.chat-msg.user span { display: inline-block; max-width: 85%; padding: 0.5rem 0.75rem; background: var(--accent); color: var(--bg); border-radius: 10px 10px 2px 10px; font-size: 0.9rem; }
+.chat-msg.assistant span { display: inline-block; max-width: 90%; padding: 0.5rem 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px 10px 10px 2px; font-size: 0.9rem; color: var(--text); text-align: left; }
+.chat-msg.typing { color: var(--muted); font-style: italic; }
+</style>
 <script>
 (function() {
+    var csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    var applyBtn = document.getElementById('apply-prompt');
+    var promptInput = document.getElementById('ai-prompt');
+    var aiError = document.getElementById('ai-error');
+    var chatMessages = document.getElementById('chat-messages');
+    var chatPlaceholder = document.getElementById('chat-placeholder');
+    function addMessage(role, text) {
+        if (chatPlaceholder) chatPlaceholder.style.display = 'none';
+        var div = document.createElement('div');
+        div.className = 'chat-msg ' + role;
+        var span = document.createElement('span');
+        span.textContent = text;
+        div.appendChild(span);
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    function removeTyping() {
+        var t = document.getElementById('chat-typing');
+        if (t) t.remove();
+    }
+    if (applyBtn && promptInput) {
+        applyBtn.addEventListener('click', function() {
+            var prompt = (promptInput.value || '').trim();
+            if (!prompt) return;
+            aiError.style.display = 'none';
+            addMessage('user', prompt);
+            promptInput.value = '';
+            applyBtn.disabled = true;
+            applyBtn.textContent = '…';
+            var typing = document.createElement('div');
+            typing.id = 'chat-typing';
+            typing.className = 'chat-msg assistant typing';
+            typing.innerHTML = '<span>Thinking…</span>';
+            chatMessages.appendChild(typing);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            fetch('{% url "core:app_generate" app.pk %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+                body: JSON.stringify({ prompt: prompt })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                removeTyping();
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Send';
+                if (res.ok && res.sections) {
+                    addMessage('assistant', res.message || "I've applied your changes.");
+                    document.getElementById('sections-json').value = JSON.stringify(res.sections, null, 2);
+                } else {
+                    addMessage('assistant', res.error || 'Something went wrong. Check OPENAI_API_KEY or try again.');
+                }
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
+            .catch(function() {
+                removeTyping();
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Send';
+                addMessage('assistant', 'Network error. Try again.');
+                aiError.textContent = 'Network error';
+                aiError.style.display = 'block';
+            });
+        });
+        promptInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); applyBtn.click(); }
+        });
+    }
     var btn = document.getElementById('save-sections');
     var ta = document.getElementById('sections-json');
     var err = document.getElementById('sections-error');
@@ -80,7 +167,7 @@
         btn.textContent = 'Saving…';
         fetch('{% url "core:app_sections_save" app.pk %}', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
             body: JSON.stringify(data)
         })
         .then(function(r) { return r.json(); })

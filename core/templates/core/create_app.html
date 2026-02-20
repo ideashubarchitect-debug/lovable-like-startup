@@ -1,9 +1,9 @@
 {% extends 'core/base.html' %}
-{% block title %}New app — AppForge{% endblock %}
+{% block title %}Create with a prompt — AppForge{% endblock %}
 {% block content %}
-<div class="container" style="max-width: 560px; padding-top: 2rem;">
-    <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Create a new app</h1>
-    <p style="color: var(--muted); margin-bottom: 1.5rem;">Describe what you want to build. Lovable-style. You're on your way.</p>
+<div class="container" style="max-width: 620px; padding-top: 2rem;">
+    <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Explain your idea — we'll build the app</h1>
+    <p style="color: var(--muted); margin-bottom: 1.5rem;">Describe the website or application you want. Chat-style: one or two sentences is enough. After creation you can keep chatting to modify it.</p>
     <form method="post" action="">
         {% csrf_token %}
         <div class="form-group">
@@ -12,17 +12,18 @@
             {% if form.name.errors %}<p style="color: #f87171; font-size: 0.85rem; margin-top: 0.35rem;">{{ form.name.errors.0 }}</p>{% endif %}
         </div>
         <div class="form-group">
-            <label for="id_template">Template</label>
-            {{ form.template }}
-            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem;">Landing page, SaaS, or Portfolio. You can edit content after.</p>
-            {% if form.template.errors %}<p style="color: #f87171; font-size: 0.85rem; margin-top: 0.35rem;">{{ form.template.errors.0 }}</p>{% endif %}
-        </div>
-        <div class="form-group">
-            <label for="id_description">What do you want to build? (optional)</label>
+            <label for="id_description">Describe your website or app</label>
             {{ form.description }}
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem;">e.g. "Landing page for a CRM with pricing and testimonials" / "Portfolio for a photographer with galleries and contact" / "SaaS homepage with hero, features, and free trial CTA"</p>
             {% if form.description.errors %}<p style="color: #f87171; font-size: 0.85rem; margin-top: 0.35rem;">{{ form.description.errors.0 }}</p>{% endif %}
         </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Create app</button>
+        <div class="form-group">
+            <label for="id_template">Fallback template (if no AI key)</label>
+            {{ form.template }}
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem;">Used when OPENAI_API_KEY is not set.</p>
+            {% if form.template.errors %}<p style="color: #f87171; font-size: 0.85rem; margin-top: 0.35rem;">{{ form.template.errors.0 }}</p>{% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem;">Create app from description</button>
     </form>
 </div>
 {% endblock %}

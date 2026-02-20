@@ -65,6 +65,20 @@
                 </div>
             </div>
         </section>
+        {% elif s.type == 'testimonials' %}
+        <section class="section">
+            <div class="container">
+                <h2>{{ s.heading|default:'Testimonials' }}</h2>
+                <div class="features" style="margin-top: 1rem;">
+                    {% for item in s.items %}
+                    <div class="feature">
+                        <p style="font-style: italic; margin-bottom: 0.5rem;">"{{ item.quote }}"</p>
+                        <p style="color: var(--accent); font-size: 0.9rem;">— {{ item.author }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
         {% elif s.type == 'pricing' %}
         <section class="section">
             <div class="container">

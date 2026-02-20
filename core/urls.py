@@ -31,6 +31,7 @@ urlpatterns = [
     ), name='password_reset_complete'),
     path('apps/new/', views.create_app, name='create_app'),
     path('apps/<int:pk>/', views.app_detail, name='app_detail'),
+    path('apps/<int:pk>/generate/', views.app_generate, name='app_generate'),
     path('apps/<int:pk>/sections/', views.app_sections_save, name='app_sections_save'),
     path('apps/<int:pk>/preview/', views.app_preview, name='app_preview'),
     path('a/<slug:slug>/', views.app_public, name='app_public'),

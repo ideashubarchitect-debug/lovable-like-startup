@@ -11,6 +11,7 @@ from django.views.decorators.http import require_http_methods
 from .models import App
 from .forms import SignUpForm, CreateAppForm, AppEditForm, PasswordChangeForm
 from .defaults import get_default_sections
+from .ai import generate_sections_from_prompt
 
 
 def landing(request):
@@ -60,9 +61,17 @@ def create_app(request):
             app = form.save(commit=False)
             app.user = request.user
             app.status = 'building'
-            app.sections = get_default_sections(app.template)
+            description = (app.description or '').strip()
+            sections = generate_sections_from_prompt(description) if description else None
+            used_ai = sections is not None
+            if not sections:
+                sections = get_default_sections(app.template)
+            app.sections = sections
             app.save()
-            messages.success(request, f'"{app.name}" created. Edit sections and publish when ready.')
+            if used_ai:
+                messages.success(request, f'"{app.name}" created from your description. Ask for changes with a prompt or publish.')
+            else:
+                messages.success(request, f'"{app.name}" created. Set OPENAI_API_KEY for prompt-based generation, or edit sections manually.')
             return redirect('core:app_detail', pk=app.pk)
         else:
             messages.error(request, 'Please fix the errors below.')
@@ -86,6 +95,35 @@ def app_detail(request, pk):
         form = AppEditForm(instance=app)
     sections_json = json.dumps(app.sections, indent=2) if app.sections else '[]'
     return render(request, 'core/app_detail.html', {'app': app, 'form': form, 'sections_json': sections_json})
+
+
+@login_required
+@require_http_methods(['POST'])
+def app_generate(request, pk):
+    """Apply AI prompt to update app sections (Lovable-style)."""
+    app = get_object_or_404(App, pk=pk, user=request.user)
+    try:
+        body = json.loads(request.body) if request.body else {}
+        prompt = (body.get('prompt') or '').strip()
+    except (json.JSONDecodeError, TypeError):
+        prompt = ''
+    if not prompt:
+        return JsonResponse({'ok': False, 'error': 'Prompt required'}, status=400)
+    sections, reply = generate_sections_from_prompt(
+        prompt, current_sections=app.sections, return_reply=True
+    )
+    if not sections:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Could not generate. Add OPENAI_API_KEY in env for AI, or edit sections manually.',
+        }, status=400)
+    app.sections = sections
+    app.save(update_fields=['sections', 'updated_at'])
+    return JsonResponse({
+        'ok': True,
+        'sections': sections,
+        'message': reply or "I've applied your changes.",
+    })
 
 
 @login_required
